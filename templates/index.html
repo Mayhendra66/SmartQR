@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart QR Code</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf/notyf.min.css">
+</head>
+
+<body class="bg-white min-h-screen flex flex-col">
+
+    <header class="p-4">
+        <h1 class="text-xl font-bold text-gray-900">SmartQR</h1>
+    </header>
+
+    <main class="flex-1 flex items-center justify-center px-3">
+        <div class="w-full max-w-3xl mb-16 mx-auto">
+            <h2 class="text-3xl font-semibold text-center text-gray-900 mb-3">Smart QR Code</h2>
+            <p class="text-center text-gray-600 mb-8">Generate QR code instantly<br>Enter any URL, text, or upload an
+                image.</p>
+
+            <!-- PREVIEW QR -->
+
+
+            <form class="space-y-6 bg-white p-8 rounded-3xl border border-gray-200 w-full max-w-3xl mx-auto"
+                action="/generate" method="post">
+
+                <div class="flex flex-col md:flex-row items-start justify-center gap-10 w-full max-w-3xl mx-auto">
+
+                    <!-- LEFT SIDE -->
+                    <div class="w-full md:w-1/2 space-y-4">
+
+                        <label class="block">
+                            <span class="text-gray-700 font-medium">Input URL or Text</span>
+                            <input id="qrInput" type="text" placeholder="Enter URL or text..." name="qr_input"
+                                class="mt-2 w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-blue-400 outline-none">
+                        </label>
+
+
+
+                        <button type="submit"
+                            class="w-full py-3 bg-black text-white rounded-3xl font-semibold hover:bg-gray-800 transition">
+                            Generate QR
+                        </button>
+
+                        <button
+                            class="w-full py-3 text-black rounded-3xl font-semibold hover:bg-gray-100 transition border">
+                            Edit QR
+                        </button>
+
+                        <div class="flex items-center my-6">
+                            <div class="flex-1 border-t border-gray-300"></div>
+                            <span class="px-4 text-sm text-gray-500">OR</span>
+                            <div class="flex-1 border-t border-gray-300"></div>
+                        </div>
+
+                        <a href="{{ qr_image }}" download="my_qr.png"
+                            class="w-full block text-center py-3 text-black rounded-3xl font-semibold hover:bg-gray-100 transition border">
+                            Download Image
+                        </a>
+
+
+                    </div>
+
+                    <!-- RIGHT SIDE (QR Preview) -->
+                    <div class="w-full md:w-1/2 flex justify-center">
+                        <img id="qrPreview" src="{{ qr_image }}"
+                            class="border rounded-2xl p-3 w-60 h-60 object-contain">
+
+                    </div>
+
+                </div>
+
+            </form>
+
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/notyf/notyf.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf/notyf.min.css">
+
+    <script>
+        const success = "{{ success }}";
+        if (success == "1") {
+            const notyf = new Notyf({
+                duration: 2500,
+                position: { x: "center", y: "top" }
+            });
+            notyf.success("QR Code generated succes!");
+        }
+    </script>
+
+
+
+</body>
+
+</html>

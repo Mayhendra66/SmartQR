@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart QR Code</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-white min-h-screen flex flex-col">
+
+    <header class="p-4">
+        <h1 class="text-xl font-bold text-gray-900">SmartQR</h1>
+    </header>
+
+
+    <main class="flex-1 flex items-center justify-center px-3">
+        <div class="w-full max-w-xs mb-8">
+
+            <h2 class="text-3xl font-semibold text-center text-gray-900 mb-3">Log in or sign up</h2>
+            <p class="text-center text-gray-600 mb-8">You'll get smarter responses and can upload<br>Url, Text, and more.</p>
+
+            <div class="space-y-3">
+
+                <input 
+                    type="email" 
+                    placeholder="Email address" 
+                    class="w-full px-4 py-3 border border-gray-300 rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                >
+
+                
+            </div>
+
+
+            <div class="flex items-center my-6">
+                <div class="flex-1 border-t border-gray-300"></div>
+                <span class="px-4 text-sm text-gray-500">OR</span>
+                <div class="flex-1 border-t border-gray-300"></div>
+            </div>
+
+
+            <div class="space-y-4">
+                <button class="w-full flex items-center gap-3 px-4 py-3 bg-white border border-gray-300 rounded-3xl hover:bg-gray-50 transition">
+                    <i class="fab fa-google text-lg"></i>
+                    <span class="text-gray-700 font-medium">Continue with Google</span>
+                </button>
+
+
+                <button class="w-full flex items-center gap-3 px-4 py-3 bg-white border border-gray-300 rounded-3xl hover:bg-gray-50 transition">
+                    <i class="fas fa-phone text-lg"></i>
+                    <span class="text-gray-700 font-medium">Continue with phone</span>
+                </button>
+                
+                <button class="w-full py-3 bg-black text-white rounded-3xl font-medium hover:bg-gray-800 transition">
+                    Continue
+                </button>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
