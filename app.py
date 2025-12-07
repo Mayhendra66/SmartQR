@@ -43,7 +43,7 @@ def generate_qr():
     text = request.form.get("qr_input")
 
     if not text:
-        return "Input tidak boleh kosong bro", 400
+        return "Input Can't null", 400
 
     save_path = os.path.join(RESULT_FOLDER, "valid_QR1.png")
 
@@ -55,9 +55,6 @@ def generate_qr():
     qr_image = url_for("static", filename="result_QR/valid_QR1.png")
 
     return redirect(url_for("index", success=1, qr="result_QR/valid_QR1.png"))
-
-
-
 
 # ---------------------- RUN ----------------------
 if __name__ == "__main__":

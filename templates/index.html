@@ -45,10 +45,12 @@
                             Generate QR
                         </button>
 
-                        <button
-                            class="w-full py-3 text-black rounded-3xl font-semibold hover:bg-gray-100 transition border">
+                        <a id="editBtn" class="w-full block text-center py-3 px-4 bg-white text-black 
+          border border-gray-300 rounded-3xl font-semibold 
+          hover:bg-gray-100 transition active:scale-95 cursor-pointer">
                             Edit QR
-                        </button>
+                        </a>
+
 
                         <div class="flex items-center my-6">
                             <div class="flex-1 border-t border-gray-300"></div>
@@ -75,6 +77,50 @@
 
             </form>
 
+            <!-- MODAL EDIT QR -->
+            <div id="editModal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden">
+    <div class="bg-white p-6 rounded-3xl w-full max-w-md shadow-xl">
+        <h2 class="text-lg font-bold mb-4">Edit QR Settings</h2>
+
+        <!-- Pilihan Design Image -->
+        <label class="block mb-3">
+            <span class="text-gray-700 font-medium mb-2 block">Choose Design</span>
+            <div class="grid grid-cols-5 gap-3">
+                <!-- Design 1 -->
+                <div class="design-option cursor-pointer border-2 border-gray-200 rounded-xl p-2 hover:border-black transition-all" data-design="1">
+                    <div class="design-image w-full aspect-square bg-gray-100 rounded-lg"></div>
+                </div>
+                
+                <!-- Design 2 -->
+                <div class="design-option cursor-pointer border-2 border-gray-200 rounded-xl p-2 hover:border-black transition-all" data-design="2">
+                    <div class="design-image w-full aspect-square bg-gray-100 rounded-lg"></div>
+                </div>
+                
+                <!-- Design 3 -->
+                <div class="design-option cursor-pointer border-2 border-gray-200 rounded-xl p-2 hover:border-black transition-all" data-design="3">
+                    <div class="design-image w-full aspect-square bg-gray-100 rounded-lg"></div>
+                </div>
+                
+                <!-- Design 4 -->
+                <div class="design-option cursor-pointer border-2 border-gray-200 rounded-xl p-2 hover:border-black transition-all" data-design="4">
+                    <div class="design-image w-full aspect-square bg-gray-100 rounded-lg"></div>
+                </div>
+                
+                <!-- Design 5 -->
+                <div class="design-option cursor-pointer border-2 border-gray-200 rounded-xl p-2 hover:border-black transition-all" data-design="5">
+                    <div class="design-image w-full aspect-square bg-gray-100 rounded-lg"></div>
+                </div>
+            </div>
+        </label>
+
+        <div class="flex justify-end gap-2 mt-4">
+            <button id="closeModal" class="px-4 py-2 bg-gray-200 rounded-xl">Close</button>
+            <button id="saveEdit" class="px-4 py-2 bg-black text-white rounded-xl">Save</button>
+        </div>
+    </div>
+</div>
+
+
 
     </main>
 
@@ -90,6 +136,26 @@
             });
             notyf.success("QR Code generated succes!");
         }
+
+
+        const modal = document.getElementById("editModal");
+        const openBtn = document.getElementById("editBtn");
+        const closeBtn = document.getElementById("closeModal");
+
+        openBtn.onclick = () => {
+            modal.classList.remove("hidden");
+        };
+
+        closeBtn.onclick = () => {
+            modal.classList.add("hidden");
+        };
+
+        // Klik area hitam untuk close
+        modal.onclick = (e) => {
+            if (e.target === modal) modal.classList.add("hidden");
+        };
+
+
     </script>
 
 
