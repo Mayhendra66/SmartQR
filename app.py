@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from PIL import Image
 import pymysql
 import qrcode
 import os
@@ -20,6 +21,26 @@ class Item(db.Model):
 # ---------------------- QR CONFIG ----------------------
 RESULT_FOLDER = "static/result_QR"
 os.makedirs(RESULT_FOLDER, exist_ok=True)
+
+def merge_qr_with_template(qr_path, template_path, output_path):
+    bg = Image.open(template_path).convert("RGBA")   # template background
+    qr = Image.open(qr_path).convert("RGBA")         # QR hasil generate
+
+    # Resize QR agar muat (sesuaikan dengan template)
+    qr = qr.resize((300, 300))  # ubah sesuai kebutuhan
+
+    # Center-kan QR
+    pos = (
+        (bg.width - qr.width) // 2,
+        (bg.height - qr.height) // 2
+    )
+
+    # Tempel QR ke template
+    bg.paste(qr, pos, qr)
+
+    bg.save(output_path)
+    return output_path
+
 
 # ---------------------- ROUTES ----------------------
 @app.route('/')
@@ -45,16 +66,25 @@ def generate_qr():
     if not text:
         return "Input Can't null", 400
 
-    save_path = os.path.join(RESULT_FOLDER, "valid_QR1.png")
-
+    # Path QR awal (sementara)
+    qr_raw_path = os.path.join(RESULT_FOLDER, "qr_raw.png")
+    
+    # Generate QR dulu
     img = qrcode.make(text)
-    img.save(save_path)
+    img.save(qr_raw_path)
 
-    # render ulang index + gambar QR baru
-    items = Item.query.all()
-    qr_image = url_for("static", filename="result_QR/valid_QR1.png")
+    # Path template
+    template_path = "static/template/template1.png"
 
+    # Path final (QR + template)
+    final_path = os.path.join(RESULT_FOLDER, "valid_QR1.png")
+
+    # Merge
+    merge_qr_with_template(qr_raw_path, template_path, final_path)
+
+    # Redirect bawa gambar final
     return redirect(url_for("index", success=1, qr="result_QR/valid_QR1.png"))
+
 
 # ---------------------- RUN ----------------------
 if __name__ == "__main__":
