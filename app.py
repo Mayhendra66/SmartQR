@@ -13,36 +13,49 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# ---------------------- MODEL ----------------------
 class Item(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), nullable=False)
+    __tablename__ = "item"   # pastikan sama persis dengan tabel MySQL
 
-# ---------------------- QR CONFIG ----------------------
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120))
+
+
 RESULT_FOLDER = "static/result_QR"
 os.makedirs(RESULT_FOLDER, exist_ok=True)
 
-def merge_qr_with_template(qr_path, template_path, output_path):
-    bg = Image.open(template_path).convert("RGBA")   # template background
-    qr = Image.open(qr_path).convert("RGBA")         # QR hasil generate
+# ----------------------------------------------------------
+# FIX QR MERGE — Versi HD dan valid ketika besar
+# ----------------------------------------------------------
+def merge_qr_with_template(qr_path, template_path, output_path, design_id):
+    bg = Image.open(template_path).convert("RGBA")
+    bg = bg.resize((1024, 1024), Image.LANCZOS)
 
-    # Resize QR agar muat (sesuaikan dengan template)
-    qr = qr.resize((300, 300))  # ubah sesuai kebutuhan
+    qr = Image.open(qr_path).convert("RGBA")
 
-    # Center-kan QR
+    qr_size = 720
+    qr = qr.resize((qr_size, qr_size), Image.NEAREST)
+
+    # 🎯 CONFIG DESAIN
+    design_config = {
+        "1": {"offset_y": 130},
+        "2": {"offset_y": 10},
+    }
+
+    offset_y = design_config.get(design_id, {"offset_y": 130})["offset_y"]
+
     pos = (
-        (bg.width - qr.width) // 2,
-        (bg.height - qr.height) // 2
+        (1024 - qr_size) // 2,
+        (1024 - qr_size) // 2 + offset_y
     )
 
-    # Tempel QR ke template
     bg.paste(qr, pos, qr)
-
     bg.save(output_path)
+
     return output_path
 
 
-# ---------------------- ROUTES ----------------------
+
+
 @app.route('/')
 def index():
     items = Item.query.all()
@@ -54,38 +67,84 @@ def index():
         qr_image = url_for("static", filename="invalid_QR.png")
 
     success = request.args.get("success")
-
     return render_template("index.html", items=items, qr_image=qr_image, success=success)
 
-
-# ---------------------- QR GENERATOR ----------------------
 @app.route('/generate', methods=['POST'])
 def generate_qr():
     text = request.form.get("qr_input")
+    design = request.form.get("design")  # bisa None / ""
 
     if not text:
         return "Input Can't null", 400
 
-    # Path QR awal (sementara)
-    qr_raw_path = os.path.join(RESULT_FOLDER, "qr_raw.png")
-    
-    # Generate QR dulu
-    img = qrcode.make(text)
+    # =========================
+    # GENERATE QR ONLY (BASE)
+    # =========================
+    qr_raw_path = os.path.join(RESULT_FOLDER, "qr_only.png")
+
+    qr = qrcode.QRCode(
+        version=None,
+        error_correction=qrcode.constants.ERROR_CORRECT_H,
+        box_size=20,
+        border=4
+    )
+
+    qr.add_data(text)
+    qr.make(fit=True)
+
+    img = qr.make_image(
+        fill_color="black",
+        back_color="white"
+    ).convert("RGBA")
+
     img.save(qr_raw_path)
 
-    # Path template
-    template_path = "static/template/template1.png"
+    # 🚨 JIKA USER TIDAK PILIH DESAIN → QR SAJA
+    if not design:
+        return redirect(url_for(
+            "index",
+            success=1,
+            qr="result_QR/qr_only.png"
+        ))
 
-    # Path final (QR + template)
-    final_path = os.path.join(RESULT_FOLDER, "valid_QR1.png")
+    # =========================
+    # JIKA PAKAI TEMPLATE
+    # =========================
+    template_map = {
+        "1": "template1.png",
+        "2": "template2.png"
+    }
 
-    # Merge
-    merge_qr_with_template(qr_raw_path, template_path, final_path)
+    template_file = template_map.get(design)
 
-    # Redirect bawa gambar final
-    return redirect(url_for("index", success=1, qr="result_QR/valid_QR1.png"))
+    # design tidak valid → fallback QR only
+    if not template_file:
+        return redirect(url_for(
+            "index",
+            success=1,
+            qr="result_QR/qr_only.png"
+        ))
+
+    template_path = f"static/template/{template_file}"
+    final_path = os.path.join(RESULT_FOLDER, f"valid_QR_{design}.png")
+
+    merge_qr_with_template(
+        qr_raw_path,
+        template_path,
+        final_path,
+        design
+    )
+
+    return redirect(url_for(
+        "index",
+        success=1,
+        qr=f"result_QR/valid_QR_{design}.png"
+    ))
 
 
-# ---------------------- RUN ----------------------
+
+
+
+
 if __name__ == "__main__":
     app.run(debug=True)

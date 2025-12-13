@@ -18,12 +18,13 @@
     <main class="flex-1 flex items-center justify-center px-3">
         <div class="w-full max-w-3xl mb-16 mx-auto">
             <h2 class="text-3xl font-semibold text-center text-gray-900 mb-3">Smart QR Code</h2>
-            <p class="text-center text-gray-600 mb-8">Generate QR code instantly<br>Enter any URL, text, or upload an
-                image.</p>
+            <p class="text-center text-gray-600 mb-8">Buat QR Code dengan Instant<br>Masukan URL/Link apapun atau text.</p>
 
             <!-- PREVIEW QR -->
             <form class="space-y-6 bg-white p-8 rounded-3xl border border-gray-200 w-full max-w-3xl mx-auto"
                 action="/generate" method="post">
+
+                <input type="hidden" name="design" id="selectedDesign" value="0">
 
                 <div class="flex flex-col md:flex-row items-start justify-center gap-10 w-full max-w-3xl mx-auto">
 
@@ -42,6 +43,8 @@
                             class="w-full py-3 bg-black text-white rounded-3xl font-semibold hover:bg-gray-800 transition">
                             Generate QR
                         </button>
+                        <input type="hidden" id="selectedDesign" name="selectedDesign" value="1">
+
 
                         <a id="editBtn" class="w-full block text-center py-3 px-4 bg-white text-black 
           border border-gray-300 rounded-3xl font-semibold 
@@ -66,8 +69,11 @@
 
                     <!-- RIGHT SIDE (QR Preview) -->
                     <div class="w-full md:w-1/2 flex justify-center">
-                        <img id="qrPreview" src="{{ qr_image }}"
-                            class="border rounded-2xl p-3 w-60 h-60 object-contain">
+                      <img id="qrPreview" src="{{ qr_image }}"
+    class="border rounded-2xl p-3 w-[240px] h-[240px] object-contain">
+
+
+
                     </div>
 
                 </div>
@@ -96,16 +102,10 @@
                                 <img src="../static/template/template2.png"
                                     class="design-image w-full aspect-square bg-gray-100 rounded-lg">
                             </div>
-                            <div class="design-option cursor-pointer border-2 border-gray-200 rounded-xl p-2 hover:border-black transition-all"
-                                data-design="2">
-                                <img src="../static/template/template3.png"
-                                    class="design-image w-full aspect-square bg-gray-100 rounded-lg">
-                            </div>
-
 
                         </div>
                     </label>
-                    
+
 
                     <div class="flex justify-end gap-2 mt-4">
                         <button id="closeModal" class="px-4 py-2 bg-gray-200 rounded-xl">Close</button>
@@ -117,6 +117,37 @@
 
 
     </main>
+
+    <script>
+        let selectedDesign = 1;
+
+        // pilih desain
+        document.querySelectorAll('.design-option').forEach(opt => {
+            opt.addEventListener('click', function () {
+
+                selectedDesign = this.dataset.design;
+
+                // highlight template yg dipilih
+                document.querySelectorAll('.design-option')
+                    .forEach(x => x.classList.remove('border-black'));
+
+                this.classList.add('border-black');
+
+                // ubah preview di halaman utama
+                document.getElementById('qrPreview').src =
+                    `/static/template/template${selectedDesign}.png`;
+
+                // simpan ke hidden input
+                document.getElementById('selectedDesign').value = selectedDesign;
+            });
+        });
+
+        // tombol save modal
+        document.getElementById('saveEdit').onclick = () => {
+            document.getElementById('editModal').classList.add('hidden');
+        };
+    </script>
+
 
     <script src="https://cdn.jsdelivr.net/npm/notyf/notyf.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf/notyf.min.css">
