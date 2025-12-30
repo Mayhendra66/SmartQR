@@ -1,0 +1,27 @@
+# LANGKAH LANGKAH MENJALANKAN PROJECT SMART QR GENERATOR
+
+1. Ekstrak Folder project ini yang berbentuk .zip atau .rar
+
+2. Buka Terminal Software Editor Code yang dimiliki
+
+3. Ketik Prompt seperti ini
+# python --version
+# python -m venv venv
+# venv\Scripts\activate
+
+- Jika Terjadi error ketika melakukan prompt syntaks seperti ini [ venv\Scripts\activate ]
+- Anda bisa melakukan prompt syntaks seperti ini
+
+# Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+# Y
+
+- Jika sudah berhasil atau tidak melewati error bisa lakukan seperti ini
+# pip install flask
+
+- Jika sudah berhasil anda bisa lakukan running project flask ini dengan ketik
+# python app.py
+
+- SELAMAT PROJECT SMART QR CODE SIAP DIGUNAKAN
+
+<!-- PROJECT INI MASIH DIDALAM LOCAL NETWORK ATAU DILUAR JARINGAN HOSTING. -->
+<!-- By MAYHENDRA ADITHIA SAPUTRA -->
