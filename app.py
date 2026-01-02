@@ -1,28 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
 from PIL import Image
-import pymysql
 import qrcode
 import os
 
-
-
-
-pymysql.install_as_MySQLdb()
-
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@127.0.0.1/flaskdb'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
-
-class Item(db.Model):
-    __tablename__ = "item"   # pastikan sama persis dengan tabel MySQL
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120))
-
-
+# =========================
+# FOLDER OUTPUT QR
+# =========================
 RESULT_FOLDER = "static/result_QR"
 os.makedirs(RESULT_FOLDER, exist_ok=True)
 
@@ -57,12 +42,11 @@ def merge_qr_with_template(qr_path, template_path, output_path, design_id):
     return output_path
 
 
-
-
+# =========================
+# ROUTE INDEX
+# =========================
 @app.route('/')
 def index():
-    items = Item.query.all()
-
     qr_image = request.args.get("qr")
     if qr_image:
         qr_image = url_for("static", filename=qr_image)
@@ -70,8 +54,17 @@ def index():
         qr_image = url_for("static", filename="invalid_QR.png")
 
     success = request.args.get("success")
-    return render_template("index.html", items=items, qr_image=qr_image, success=success)
 
+    return render_template(
+        "index.html",
+        qr_image=qr_image,
+        success=success
+    )
+
+
+# =========================
+# GENERATE QR
+# =========================
 @app.route('/generate', methods=['POST'])
 def generate_qr():
     text = request.form.get("qr_input")
@@ -81,7 +74,7 @@ def generate_qr():
         return "Input Can't null", 400
 
     # =========================
-    # GENERATE QR ONLY (BASE)
+    # GENERATE QR ONLY
     # =========================
     qr_raw_path = os.path.join(RESULT_FOLDER, "qr_only.png")
 
@@ -102,7 +95,7 @@ def generate_qr():
 
     img.save(qr_raw_path)
 
-    # 🚨 JIKA USER TIDAK PILIH DESAIN → QR SAJA
+    # 🚨 JIKA TIDAK PILIH DESAIN
     if not design:
         return redirect(url_for(
             "index",
@@ -111,7 +104,7 @@ def generate_qr():
         ))
 
     # =========================
-    # JIKA PAKAI TEMPLATE
+    # TEMPLATE QR
     # =========================
     template_map = {
         "1": "template1.png",
@@ -120,7 +113,6 @@ def generate_qr():
 
     template_file = template_map.get(design)
 
-    # design tidak valid → fallback QR only
     if not template_file:
         return redirect(url_for(
             "index",
@@ -145,10 +137,8 @@ def generate_qr():
     ))
 
 
-
-
-
-# RUN APLIKASI
+# =========================
+# RUN APP
+# =========================
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
-
